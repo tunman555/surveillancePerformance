@@ -1,3 +1,4 @@
+from pandas.core.base import SpecificationError
 import numpy as np
 import streamlit as st
 import pandas as pd
@@ -5,6 +6,7 @@ import plotly.figure_factory as ff
 import plotly.express as px
 import json
 from haversine import haversine,Unit
+import random 
 
 def dms2dd(Lat,Lon):
     Lat_dd = int(Lat[:2]) + float(int(Lat[2:4]))/60 + float(int(Lat[4:]))/3600
@@ -44,6 +46,19 @@ def create_pipeline(list_site):
             pipeline.append(index)
     return pipeline
 
+def random_height(pipeline):
+    rand_alt = []
+    n =  len(pipeline)
+    for i in range(n):
+        x = round(random.uniform(300,320))
+        rand_alt.append(x)
+    return rand_alt
+@st.cache
+def load_status():
+    df = pd.read_csv('./src/site_status.txt',sep=';')
+    df = df.loc[df['site_identification'].str.contains('SSR')]
+    return df
+    
 def plot_map(list_site):
     st.title('Surveillance performance datavisualization')
     st.markdown("""
@@ -66,31 +81,48 @@ def plot_map(list_site):
         
         for j in range(10000):
             point=(tmp_lat[j],tmp_lon[j])
-            if haversine(mean,point, unit=Unit.NAUTICAL_MILES) > tmp_max :
+            if haversine(mean,point, unit=Unit.NAUTICAL_MILES) > 250 :
+                tmp_lat[j] =  mean[i]
+                tmp_lon[j] =  mean[i]
+            elif haversine(mean,point, unit=Unit.NAUTICAL_MILES) > tmp_max :
                 tmp_max = haversine(mean, point, unit=Unit.NAUTICAL_MILES)
         farthest_p[k[i]] = tmp_max
-        
-        lat_site = lat_site + tmp_lat
-        lon_site = lon_site + tmp_lon
+        mean_x = [mean[0]]*20
+        mean_y = [mean[1]]*20
+        lat_site = lat_site + tmp_lat + mean_x
+        lon_site = lon_site + tmp_lon + mean_y
     
     px.set_mapbox_access_token("pk.eyJ1IjoidHVubWFuNTU1IiwiYSI6ImNrcHA5MGhzajBsMXIydm1ubzE1YmZhbHIifQ.8rPLrf8FYUq0ZkDrAF6_vA")
     fig = ff.create_hexbin_mapbox(
         #data_frame=df, lat="DMASSR_lat", lon="DMASSR_lon",
         lat =lat_site,lon =lon_site,mapbox_style ='light',
-        nx_hexagon=50, opacity=0.2,min_count=1,labels={"color": "Surveillance site"}
+        nx_hexagon=75, opacity=0.4,min_count=1,labels={"color": "Surveillance site"}
     )
 
     fig.update_layout(margin=dict(b=0, t=0, l=0, r=0),hovermode=False,coloraxis_showscale=False)
     st.plotly_chart(fig)
     
+    df_down = load_status()
+    st.markdown("# Site status changed.")
+    st.markdown(" The site status change has occured due to many reasons such as Preventive Maintainance (PM), Missing Pulse repetition frequency(PRF)"
+                " and etc.")
+    st.markdown("The table below this is the example of site_change_status in the TMCS database")
+    st.dataframe(df_down.head(10))
+
+    rand_alt = random_height(pipeline)
     df_stat = pd.DataFrame.from_dict(farthest_p,orient = 'index',columns = ['Farthest Range (NM)'])
+    df_stat['Altitude at farthest (ft)'] = rand_alt
     df_stat['Last PM date'] ='N/A'
-    #df_stat = df_stat.T
+    df_stat['Downtime (s)'] = 'N/A'
+
+    st.markdown("# The summary of SSR surveillance.")
     st.table(df_stat)
 
+    st.markdown("# ")
     with st.beta_expander("See notes"):
         st.markdown("To see more information of the concept of multivariate normal distribution on https://en.wikipedia.org/wiki/Multivariate_normal_distribution")
-        st.markdown("And the information of the SSR on https://en.wikipedia.org/wiki/Secondary_surveillance_radar ")
+        st.markdown("To see more about the Radiation pattern on https://en.wikipedia.org/wiki/Radiation_pattern ")
+        st.markdown("To see more about the PRF https://en.wikipedia.org/wiki/Radar_signal_characteristics#Pulse_repetition_frequency_(PRF)")
 
 def main():
 
@@ -102,9 +134,9 @@ def main():
     p_holder2.markdown("After clicking start, the individual steps of the pipeline are visualized. The ouput of the previous step is the input to the next step.")
     
     st.sidebar.markdown("# Background")
-    st.sidebar.markdown("   This project was create to cross checking the performance of SSR status. \n" 
-                        "The idea of the plot is using multivariate normal distribution to locate site \n"
-                        "Try it by checking the box below :)")
+    st.sidebar.markdown("   This project was create to cross checking the performance of SSR status. \n")
+    st.sidebar.markdown("The idea of the plot is using multivariate normal distribution to locate site \n")
+    st.sidebar.markdown("Try it by checking the box and press the Apply button below :)")
 
     st.sidebar.markdown("# Choose the SSR here:")
     DMASSR = st.sidebar.checkbox("DMASSR")
@@ -122,18 +154,16 @@ def main():
     INTSSR = st.sidebar.checkbox("INTSSR")
     PHKSSR = st.sidebar.checkbox("PHKSSR")
     st.sidebar.markdown("---")
-    
-    st.sidebar.markdown("Thanks to Dopple finance community for giving me a big inspiration !!\n"
-                        "Dop to da moon")
     if st.sidebar.button("Apply"):
         p_holder1.empty()
         p_holder2.empty()
         list_site = [DMASSR,SVBSSR,CMASSR,SRTSSR,PSLSSR,PUTSSR,UBNSSR,HTYSSR,CMPSSR,CTRSSR,ROTSSR,UDNSSR,INTSSR,PHKSSR] 
         plot_map(list_site)
-    
+
+    st.sidebar.markdown("Thanks to Dopple finance community for giving me a big inspiration !!\n"
+                        "Keep calm and hodl dop")
+
+
 if __name__ == '__main__':
     #st.set_page_config(layout="wide",page_title="Radar coverage visualization")
     main()
-
-
-
