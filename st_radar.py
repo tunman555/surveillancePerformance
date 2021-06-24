@@ -68,7 +68,6 @@ def plot_map(list_site):
 
     pipeline = create_pipeline(list_site)
 
-    l = np.arange(14)
     lat_site,lon_site = [],[]
     farthest_p ={}
     v = list(site_dms.values())
@@ -82,8 +81,8 @@ def plot_map(list_site):
         for j in range(10000):
             point=(tmp_lat[j],tmp_lon[j])
             if haversine(mean,point, unit=Unit.NAUTICAL_MILES) > 250 :
-                tmp_lat[j] =  mean[i]
-                tmp_lon[j] =  mean[i]
+                tmp_lat[j] =  mean[0]
+                tmp_lon[j] =  mean[1]
             elif haversine(mean,point, unit=Unit.NAUTICAL_MILES) > tmp_max :
                 tmp_max = haversine(mean, point, unit=Unit.NAUTICAL_MILES)
         farthest_p[k[i]] = tmp_max
