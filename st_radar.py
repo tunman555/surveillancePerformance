@@ -132,7 +132,7 @@ def main():
     p_holder2 = st.empty()
     p_holder1.markdown("# SSR Data visualization \n"
                          "### Select the site of the pipeline in the sidebar.\n"
-                         "Once you have chosen SSR site,Then click \"Apply\" to start!")
+                         "Once you have chosen SSR on the sidebar,Then click \"Apply\" to start!")
     p_holder2.markdown("After clicking start, the individual steps of the pipeline are visualized. The ouput of the previous step is the input to the next step.")
     
     st.sidebar.markdown("# Background")
