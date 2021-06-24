@@ -119,9 +119,12 @@ def plot_map(list_site):
 
     st.markdown("# ")
     with st.beta_expander("See notes"):
-        st.markdown("To see more information of the concept of multivariate normal distribution on https://en.wikipedia.org/wiki/Multivariate_normal_distribution")
-        st.markdown("To see more about the Radiation pattern on https://en.wikipedia.org/wiki/Radiation_pattern ")
-        st.markdown("To see more about the PRF https://en.wikipedia.org/wiki/Radar_signal_characteristics#Pulse_repetition_frequency_(PRF)")
+        st.markdown("To see more information of the concept of multivariate normal distribution")
+        st.markdown("https://en.wikipedia.org/wiki/Multivariate_normal_distribution")
+        st.markdown("To see more about the Radiation pattern")
+        st.markdown("https://en.wikipedia.org/wiki/Radiation_pattern ")
+        st.markdown("To see more about the PRF ")
+        st.markdown("https://en.wikipedia.org/wiki/Radar_signal_characteristics#Pulse_repetition_frequency_(PRF)")
 
 def main():
 
@@ -159,8 +162,8 @@ def main():
         list_site = [DMASSR,SVBSSR,CMASSR,SRTSSR,PSLSSR,PUTSSR,UBNSSR,HTYSSR,CMPSSR,CTRSSR,ROTSSR,UDNSSR,INTSSR,PHKSSR] 
         plot_map(list_site)
 
-    st.sidebar.markdown("Thanks to Dopple finance community for giving me a big inspiration !!\n"
-                        "Keep calm and hodl dop")
+    st.sidebar.markdown("Thanks to Dopple finance community for giving me a big inspiration !!")
+    st.sidebar.markdown("Keep calm and hodl $DOP")
 
 
 if __name__ == '__main__':
