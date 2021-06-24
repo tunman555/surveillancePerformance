@@ -135,7 +135,7 @@ def main():
     p_holder1.markdown("# Data visualization of SSR performance.\n"
                          "### Let's select the SSR site on the sidebar.\n"
                          "### Once you have chosen SSR site,Then click \"Apply\" to start!")
-    p_holder2.markdown("###Hope you enjoy it :)")
+    p_holder2.markdown("### Hope you enjoy it :)")
     
     st.sidebar.markdown("# Background")
     st.sidebar.markdown("   This project was create to cross checking the performance of SSR status. \n")
