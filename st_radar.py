@@ -7,6 +7,7 @@ import plotly.express as px
 import json
 from haversine import haversine,Unit
 import random 
+from PIL import Image
 
 def dms2dd(Lat,Lon):
     Lat_dd = int(Lat[:2]) + float(int(Lat[2:4]))/60 + float(int(Lat[4:]))/3600
@@ -53,13 +54,16 @@ def random_height(pipeline):
         x = round(random.uniform(300,320))
         rand_alt.append(x)
     return rand_alt
+
 @st.cache
 def load_status():
     df = pd.read_csv('./src/site_status.txt',sep=';')
     df = df.loc[df['site_identification'].str.contains('SSR')]
     return df
     
-def plot_map(list_site):
+def visual(list_site):
+    image = Image.open('./src/pic.jpg')
+    st.image(image)
     st.title('Surveillance performance datavisualization')
     st.markdown("""
     * The glowing is refered to the location of Secondary RADAR site.
@@ -101,38 +105,36 @@ def plot_map(list_site):
     fig.update_layout(margin=dict(b=0, t=0, l=0, r=0),hovermode=False,coloraxis_showscale=False)
     st.plotly_chart(fig)
     
+    rand_alt = random_height(pipeline)
+    farth_list = list(farthest_p.values())
+    area_cov = [ 3.14*1.852*(i*0.9)**2 for i in farth_list]
+
+    df_stat = pd.DataFrame.from_dict(farthest_p,orient = 'index',columns = ['Farthest Range (NM)'])
+    df_stat['Area (km^2)'] = area_cov
+    df_stat['Altitude at farthest (ft)'] = rand_alt
+
+    st.markdown("# The summary of SSR surveillance.")
+    st.table(df_stat)
+    st.markdown("The area was calculated from 90% from the farthest Range")
+
     df_down = load_status()
     st.markdown("# Site status changed.")
     st.markdown(" The site status change has occured due to many reasons such as Preventive Maintainance (PM), Missing Pulse repetition frequency(PRF)"
                 " and etc.")
-    st.markdown("The table below this is the example of site_change_status in the TMCS database")
-    st.dataframe(df_down.head(10))
+    st.markdown("The table below this is the example of site_change_status table in the TMCS database")
+    st.dataframe(df_down.head(5))
 
-    rand_alt = random_height(pipeline)
-    df_stat = pd.DataFrame.from_dict(farthest_p,orient = 'index',columns = ['Farthest Range (NM)'])
-    df_stat['Altitude at farthest (ft)'] = rand_alt
-    df_stat['Last PM date'] ='N/A'
-    df_stat['Downtime (s)'] = 'N/A'
-
-    st.markdown("# The summary of SSR surveillance.")
-    st.table(df_stat)
-
-    st.markdown("# ")
     with st.beta_expander("See notes"):
-        st.markdown("To see more information of the concept of multivariate normal distribution")
-        st.markdown("https://en.wikipedia.org/wiki/Multivariate_normal_distribution")
-        st.markdown("To see more about the Radiation pattern")
-        st.markdown("https://en.wikipedia.org/wiki/Radiation_pattern ")
-        st.markdown("To see more about the PRF ")
-        st.markdown("https://en.wikipedia.org/wiki/Radar_signal_characteristics#Pulse_repetition_frequency_(PRF)")
+        st.markdown("To see more information of the concept of multivariate normal distribution on https://en.wikipedia.org/wiki/Multivariate_normal_distribution")
+        st.markdown("To see more about the Radiation pattern on https://en.wikipedia.org/wiki/Radiation_pattern ")
+        st.markdown("To see more about the PRF https://en.wikipedia.org/wiki/Radar_signal_characteristics#Pulse_repetition_frequency_(PRF)")
 
 def main():
-
     p_holder1 = st.empty()
     p_holder2 = st.empty()
-    p_holder1.markdown("# SSR Data visualization \n"
+    p_holder1.markdown("# Visualize an radar coverage pipeline\n"
                          "### Select the site of the pipeline in the sidebar.\n"
-                         "Once you have chosen SSR on the sidebar,Then click \"Apply\" to start!")
+                         "Once you have chosen SSR site,Then click \"Apply\" to start!")
     p_holder2.markdown("After clicking start, the individual steps of the pipeline are visualized. The ouput of the previous step is the input to the next step.")
     
     st.sidebar.markdown("# Background")
@@ -160,10 +162,10 @@ def main():
         p_holder1.empty()
         p_holder2.empty()
         list_site = [DMASSR,SVBSSR,CMASSR,SRTSSR,PSLSSR,PUTSSR,UBNSSR,HTYSSR,CMPSSR,CTRSSR,ROTSSR,UDNSSR,INTSSR,PHKSSR] 
-        plot_map(list_site)
+        visual(list_site)
 
-    st.sidebar.markdown("Thanks to Dopple finance community for giving me a big inspiration !!")
-    st.sidebar.markdown("Keep calm and hodl $DOP")
+    st.sidebar.markdown("Thanks to Dopple finance community for giving me a big inspiration !!\n"
+                        "Keep calm and hodl dop")
 
 
 if __name__ == '__main__':
