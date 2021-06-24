@@ -131,10 +131,11 @@ def visual(list_site):
 
 def main():
     p_holder1 = st.empty()
-    #p_holder2 = st.empty()
+    p_holder2 = st.empty()
     p_holder1.markdown("# Data visualization of SSR performance"
                          "### Select the site of the pipeline in the sidebar.\n"
                          "Once you have chosen SSR site,Then click \"Apply\" to start!")
+    p_holder2.markdown("Hope you enjoy it :)")
     
     st.sidebar.markdown("# Background")
     st.sidebar.markdown("   This project was create to cross checking the performance of SSR status. \n")
