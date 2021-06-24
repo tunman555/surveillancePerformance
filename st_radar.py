@@ -99,7 +99,7 @@ def visual(list_site):
     fig = ff.create_hexbin_mapbox(
         #data_frame=df, lat="DMASSR_lat", lon="DMASSR_lon",
         lat =lat_site,lon =lon_site,mapbox_style ='light',
-        nx_hexagon=75, opacity=0.4,min_count=1,width=482,height=720
+        nx_hexagon=75, opacity=0.4,min_count=1,width=480,height=600
     )
 
     fig.update_layout(margin=dict(b=0, t=0, l=0, r=0),hovermode=False,coloraxis_showscale=False)
