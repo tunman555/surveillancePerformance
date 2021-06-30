@@ -233,7 +233,7 @@ def main():
     p_holder2.markdown("### Additional feature \n"
                         "You can select a list of reporting point to see which SSR is covered the point you've selected.")
     p_holder3.markdown("Once you have chosen all the option,Then click \"Apply\" to start!. \n"
-                        "## Disclaimer : For now the data this project is the mock-up data.")
+                        "### Disclaimer : For now the data this project is the mock-up data.")
 
     st.sidebar.markdown("# Background")
 #    st.sidebar.markdown("   This project was create to cross checking the performance of SSR status. \n")
